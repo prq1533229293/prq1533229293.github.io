@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>添加商户</title>
+    <script src="vue.js" type="text/javascript" charset="utf-8"></script>
+    <!-- import CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+</head>
+<body>
+    <div id="app" style="width:340px">
+        <el-form ref="form" :model="form" :rules="rules" label-width="120px">
+
+            <el-form-item label="所属代理商" prop="belong">
+                <el-input v-model="form.belong" placeholder="请输入内容" clearable ></el-input>
+            </el-form-item>
+
+            <el-form-item label="营业执照名称" prop="merchantName">
+                <el-input v-model="form.merchantName" placeholder="请输入内容" clearable></el-input>
+            </el-form-item>
+
+            <el-form-item label="商户简称" prop="merchantForshort">
+                <el-input v-model="form.merchantForshort" placeholder="请输入内容" clearable></el-input>
+            </el-form-item>
+
+            <el-form-item label="联系人姓名" prop="contactName">
+                <el-input v-model="form.contactName" placeholder="请输入内容" clearable></el-input>
+            </el-form-item>
+
+            <el-form-item label="联系电话" prop="phone">
+                <el-input v-model="form.phone" placeholder="请输入内容" clearable></el-input>
+            </el-form-item>
+
+            <el-form-item label="申请入驻日期" required>
+                <el-col :span="11">
+                    <el-form-item prop="applicationDate">
+                        <el-date-picker
+                            type="date"
+                            v-model="form.applicationDate"
+                            placeholder="选择日期"
+                            format="yyyy 年 MM 月 dd 日"
+                            value-format="yyyy-MM-dd">
+                        </el-date-picker>
+                    </el-form-item>
+                </el-col>
+            </el-form-item>
+
+            <el-form-item label="入驻状态" prop="status">
+                <el-select v-model="form.status" placeholder="请选择">
+                    <el-option label="审核中" value="审核中"></el-option>
+                    <el-option label="待账户验证" value="待账户验证"></el-option>
+                    <el-option label="微信待验证" value="微信待验证"></el-option>
+                    <el-option label="支付宝待验证" value="支付宝待验证"></el-option>
+                    <el-option label="审核不通过" value="审核不通过"></el-option>
+                    <el-option label="入驻完成" value="入驻完成"></el-option>
+                </el-select>
+            </el-form-item>
+
+            <el-form-item label="微信费率">
+                <el-autocomplete
+                        class="inline-input"
+                        v-model="form.wechatRate"
+                        :fetch-suggestions="querySearch"
+                        placeholder="请输入内容"
+                        clearable>
+                </el-autocomplete>
+            </el-form-item>
+
+            <el-form-item label="支付宝账号">
+                <el-input v-model="form.alipayId" placeholder="请输入内容" clearable></el-input>
+            </el-form-item>
+
+            <el-form-item label="支付宝商家名称">
+                <el-input v-model="form.alipayTheir" placeholder="请输入内容" clearable></el-input>
+            </el-form-item>
+
+            <el-form-item label="支付宝费率">
+                <el-autocomplete
+                        class="inline-input"
+                        v-model="form.alipayRate"
+                        :fetch-suggestions="querySearch"
+                        placeholder="请输入内容"
+                        clearable>
+                </el-autocomplete>
+            </el-form-item>
+
+            <el-form-item label="备注">
+                <el-input v-model="form.note" placeholder="请输入内容" clearable></el-input>
+            </el-form-item>
+
+            <el-form-item>
+                <el-button type="primary" @click="submitForm('form')">立即创建</el-button>
+                <el-button @click="resetForm('form')">重置</el-button>
+            </el-form-item>
+
+        </el-form>
+    </div>
+</body>
+<!-- import Vue before Element -->
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<!-- import JavaScript -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script>
+    var Main = {
+        data() {
+            return {
+                form: {
+                    belong: '什么',
+                    merchantName: '1',
+                    merchantForshort: '2',
+                    contactName: '3',
+                    phone: '4',
+                    applicationDate: '2020-03-02',
+                    status: '审核中',
+                    wechatRate: '',
+                    restaurants: [],
+                    alipayId: '',
+                    alipayTheir: '',
+                    alipayRate: '',
+                    note: ''
+                },
+                rules: {
+                    belong: [
+                        { required: true, message: '请填写代理商姓名', trigger: 'blur' },
+                        { min: 2, max: 5, message: '长度在 2 到 5 个字符', trigger: 'blur' }
+                    ],
+                    merchantName: [
+                        { required: true, message: '请填写营业执照名称', trigger: 'blur' }
+                    ],
+                    merchantForshort: [
+                        { required: true, message: '请填写商户简称', trigger: 'blur' }
+                    ],
+                    contactName: [
+                        { required: true, message: '请填写联系人姓名', trigger: 'blur' }
+                    ],
+                    phone: [
+                        { required: true, message: '请填写手机号码', trigger: 'blur' }
+                    ],
+                    applicationDate: [
+                        { type: 'string', required: true, message: '请选择日期' }
+                    ],
+                    status: [
+                        { required: true, message: '请填写商户状态', trigger: 'change' }
+                    ]
+                }
+            }
+        },
+        methods: {
+            submitForm(formInfo) {
+                var belong = this.belong;
+                this.$refs[formInfo].validate((valid) => {
+                    if (valid) {
+                        console.log(belong);
+                    } else {
+                        console.log('error submit!!');
+                        return false;
+                    }
+                });
+
+            },
+            resetForm(formName) {
+                this.$refs[formName].resetFields();
+            },
+            querySearch(queryString, cb) {
+                var restaurants = this.restaurants;
+                var results = queryString ? restaurants.filter(this.createFilter(queryString)) : restaurants;
+                // 调用 callback 返回建议列表的数据
+                cb(results);
+            },
+            createFilter(queryString) {
+                return (restaurant) => {
+                    return (restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
+                };
+            },
+            loadAll() {
+                return [
+                    { "value": "0.38"},
+                    { "value": "0.30"},
+                    { "value": "0.28"}
+                ];
+            }
+        },
+        mounted() {
+            this.restaurants = this.loadAll();
+        }
+    }
+    var Ctor = Vue.extend(Main)
+    new Ctor().$mount('#app')
+</script>
+</html>
