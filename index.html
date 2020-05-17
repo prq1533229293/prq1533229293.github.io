@@ -469,6 +469,8 @@
 
             // 新增、修改函数
             addUpdate(formName, url) {
+                console.log("商户号");
+                console.log(this.form.weChatMerchant);
                 //封装参数
                 const params = new URLSearchParams();
                 params.append('id', this.form.id);
@@ -480,7 +482,7 @@
                 params.append('applicationDate', this.form.applicationDate);
                 params.append('status', this.form.status);
                 params.append('childMerchant', this.form.childMerchant);
-                params.append('weChantMerchant', this.form.weChatMerchant);
+                params.append('weChatMerchant', this.form.weChatMerchant);
                 params.append('weChatRate', this.form.weChatRate);
                 if (this.form.weChatRateDate == null) {
                     this.form.weChatRateDate = "";
