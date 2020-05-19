@@ -31,13 +31,21 @@
             margin-bottom: 0;
             width: 50%;
         }
+
+        .info{
+            height: 720px;
+            overflow: auto;
+        }
+        .info::-webkit-scrollbar {
+            display: none;
+        }
     </style>
 </head>
 <body style="width: 95%">
 <div id="app">
     <div style="width: 95%; padding: 35px 0 20px 5%">
         <el-button type="primary" icon="el-icon-edit" @click="dialogFormVisible = true; add()">新增</el-button>
-        <el-form ref="condition" :model="condition" :rules="rules" label-width="100px">
+        <el-form ref="condition" :model="condition" :rules="rules" label-width="100px" style="float: right">
             <el-row>
                 <el-col :span="4">
                     <el-form-item label="查询类型">
@@ -68,8 +76,24 @@
                         </el-select>
                     </el-form-item>
                 </el-col>
-                <el-button type="primary" icon="el-icon-search" style="margin-left: 50px" @click="select()">查询
-                </el-button>
+                <!-- 日期选择器 -->
+                <el-col :span="4">
+                    <el-form-item label="选择日期">
+                        <el-date-picker
+                                v-model="date"
+                                type="daterange"
+                                align="right"
+                                unlink-panels
+                                value-format="yyyy-MM-dd"
+                                range-separator="至"
+                                start-placeholder="开始日期"
+                                end-placeholder="结束日期"
+                                :picker-options="pickerOptions"
+                                style="width:160%">
+                        </el-date-picker>
+                    </el-form-item>
+                </el-col>
+                <el-button type="primary" icon="el-icon-search" style="margin-left: 150px" @click="select()">查询</el-button>
             </el-row>
         </el-form>
     </div>
@@ -77,7 +101,8 @@
     <!-- 商户数据表 -->
     <template>
         <el-table :data="merchantsInfo" :row-key="getRowKeys" :expand-row-keys="expands" @expand-change="expandSelect"
-                  :key="merchantsInfo">
+                  :key="merchantsInfo"
+                  class="info">
             <el-table-column type="expand">
                 <template slot-scope="props">
                     <el-form label-position="left" inline class="demo-table-expand">
@@ -330,7 +355,9 @@
                 condition: {
                     types: '',
                     content: '',
-                    status: ''
+                    status: '',
+                    startData: '',
+                    endDate: ''
                 },
                 //用于表单重置为空
                 editForm: {
@@ -400,6 +427,35 @@
                         {required: true, message: '请填写商户状态', trigger: 'change'}
                     ]
                 },
+                date: '',
+                // 日期选择器快捷日期选择函数
+                pickerOptions: {
+                    shortcuts: [{
+                        text: '最近一周',
+                        onClick(picker) {
+                            const end = new Date();
+                            const start = new Date();
+                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }, {
+                        text: '最近一个月',
+                        onClick(picker) {
+                            const end = new Date();
+                            const start = new Date();
+                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }, {
+                        text: '最近三个月',
+                        onClick(picker) {
+                            const end = new Date();
+                            const start = new Date();
+                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }]
+                },
                 dialogFormVisible: false,
                 addButtonVisible: '',
                 editButtonVisible: '',
@@ -411,7 +467,7 @@
             // 给商户费率添加快捷选项
             this.restaurants = this.loadAll();
             //设置接口地址
-            const url = 'http://localhost:8080/select';
+            const url = 'http://localhost:8080/index';
 
             // 调用查询商户信息的函数
             this.selectInfo(url);
@@ -426,6 +482,15 @@
             },
             // 查询全部商户信息
             selectInfo(url) {
+
+                // 获取输入的查询日期
+                let startDate = '';
+                let endDate = '';
+                if(this.date !== null && this.date !== ""){
+                    startDate = this.date[0];
+                    endDate = this.date[1];
+                }
+
                 //声明查询类型
                 let types = 0;
                 //判断是否选择了查询类型
@@ -439,6 +504,8 @@
                 params.append('types', types);
                 params.append('content', this.condition.content);
                 params.append('status', this.condition.status);
+                params.append('startDate', startDate);
+                params.append('endDate', endDate);
                 // 发起请求
                 axios.post(url, params)
                     .then((response) => {
@@ -511,7 +578,7 @@
                                 type: 'success'
                             });
                             // 调用查询商户信息的函数
-                            a.selectInfo('http://localhost:8080/select');
+                            a.selectInfo('http://localhost:8080/index');
 
                         } else {
                             a.reset(formName);
@@ -543,7 +610,7 @@
             // 查询按钮触发函数
             select() {
                 //设置接口地址
-                const url = 'http://localhost:8080/select';
+                const url = 'http://localhost:8080/index';
                 // 调用查询商户信息的函数
                 this.selectInfo(url);
             },
@@ -558,23 +625,31 @@
 
             //页码改变触发函数
             currentChange(val) {
-                console.log(val);
+
+                // 获取输入的查询日期
+                let startDate = '';
+                let endDate = '';
+                if(this.date !== null && this.date !== ""){
+                    startDate = this.date[0];
+                    endDate = this.date[1];
+                }
 
                 //声明查询类型
                 let types = 0;
+
                 //判断是否选择了查询类型
                 if(this.condition.types !== ""){
                     //将选择类型的Sting转换为int，传值到后台
                     types = parseInt(this.condition.types);
                 }
-                console.log(this.condition.content);
-                const url = "http://localhost:8080/index?currents="+val+"&types="+types+"&content="+this.condition.content+"&status="+this.condition.status+"";
+
+                const url = "http://localhost:8080/index?currents="+val+"&types="+types+"&content="+this.condition.content+"&status="+this.condition.status+"&startDate="+startDate+"&endDate="+endDate+"";
                 const a = this;
 
                 // 发起请求
                 axios.post(url)
                     .then(function (response) {
-                        console.log(response.data);
+
                         a.merchantsInfo = response.data.merchants;
                         a.total = response.data.total;
 
@@ -604,7 +679,6 @@
                     {"value": "0.28"}
                 ];
             }
-
 
         }
 
