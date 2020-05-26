@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8"/>
+    <meta charset="utf-8">
     <title>商户入驻记录</title>
     <!-- 引入vue -->
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.11"></script>
@@ -54,6 +54,7 @@
                             <el-option label="营业执照名称" value="2"></el-option>
                             <el-option label="商户简称" value="3"></el-option>
                             <el-option label="微信商户号" value="4"></el-option>
+                            <el-option label="备注" value="5"></el-option>
                         </el-select>
                     </el-form-item>
                 </el-col>
@@ -328,10 +329,10 @@
             </el-row>
 
             <el-form-item id="button">
-                <el-button type="primary" @click="submitForm('form','http://192.168.0.105:8080/add')"
+                <el-button type="primary" @click="submitForm('form','http://127.0.0.1:8080/add')"
                            :style="{display: addButtonVisible}"><i
                         class="el-icon-upload el-icon--left"> 添加</i></el-button>
-                <el-button type="primary" @click="submitForm('form','http://192.168.0.105:8080/update')"
+                <el-button type="primary" @click="submitForm('form','http://127.0.0.1:8080/update')"
                            :style="{display: editButtonVisible}"
                            style="margin-left: 0"><i class="el-icon-upload el-icon--left"> 修改</i></el-button>
                 <el-button @click="reset('form')" style="margin-left: 335px">重置</el-button>
@@ -467,7 +468,7 @@
             // 给商户费率添加快捷选项
             this.restaurants = this.loadAll();
             //设置接口地址
-            const url = 'http://192.168.0.105:8080/index';
+            const url = 'http://127.0.0.1:8080/index';
 
             // 调用查询商户信息的函数
             this.selectInfo(url);
@@ -578,7 +579,7 @@
                                 type: 'success'
                             });
                             // 调用查询商户信息的函数
-                            a.selectInfo('http://192.168.0.105:8080/index');
+                            a.selectInfo('http://127.0.0.1:8080/index');
 
                         } else {
                             a.reset(formName);
@@ -610,7 +611,7 @@
             // 查询按钮触发函数
             select() {
                 //设置接口地址
-                const url = 'http://192.168.0.105:8080/index';
+                const url = 'http://127.0.0.1:8080/index';
                 // 调用查询商户信息的函数
                 this.selectInfo(url);
             },
@@ -643,7 +644,7 @@
                     types = parseInt(this.condition.types);
                 }
 
-                const url = "http://192.168.0.105:8080/index?currents="+val+"&types="+types+"&content="+this.condition.content+"&status="+this.condition.status+"&startDate="+startDate+"&endDate="+endDate+"";
+                const url = "http://127.0.0.1:8080/index?currents="+val+"&types="+types+"&content="+this.condition.content+"&status="+this.condition.status+"&startDate="+startDate+"&endDate="+endDate+"";
                 const a = this;
 
                 // 发起请求
