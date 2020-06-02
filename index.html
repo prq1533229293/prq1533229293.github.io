@@ -32,13 +32,6 @@
             width: 50%;
         }
 
-        .info{
-            height: 720px;
-            overflow: auto;
-        }
-        .info::-webkit-scrollbar {
-            display: none;
-        }
     </style>
 </head>
 <body style="width: 95%">
@@ -50,11 +43,12 @@
                 <el-col :span="4">
                     <el-form-item label="查询类型">
                         <el-select v-model="condition.types" placeholder="请选择" clearable style="width:100%">
-                            <el-option label="代理商姓名" value="1"></el-option>
-                            <el-option label="营业执照名称" value="2"></el-option>
-                            <el-option label="商户简称" value="3"></el-option>
-                            <el-option label="微信商户号" value="4"></el-option>
-                            <el-option label="备注" value="5"></el-option>
+                            <el-option label="代理商姓名" value="belong"></el-option>
+                            <el-option label="营业执照名称" value="merchant_name"></el-option>
+                            <el-option label="商户简称" value="merchant_for_short"></el-option>
+                            <el-option label="微信商户号" value="we_chat_merchant"></el-option>
+                            <el-option label="支付宝账号" value="ali_pay_id"></el-option>
+                            <el-option label="备注" value="note"></el-option>
                         </el-select>
                     </el-form-item>
                 </el-col>
@@ -103,7 +97,7 @@
     <template>
         <el-table :data="merchantsInfo" :row-key="getRowKeys" :expand-row-keys="expands" @expand-change="expandSelect"
                   :key="merchantsInfo"
-                  class="info">
+                  height="750">
             <el-table-column type="expand">
                 <template slot-scope="props">
                     <el-form label-position="left" inline class="demo-table-expand">
@@ -492,17 +486,9 @@
                     endDate = this.date[1];
                 }
 
-                //声明查询类型
-                let types = 0;
-                //判断是否选择了查询类型
-                if(this.condition.types !== ""){
-                    //将选择类型的Sting转换为int，传值到后台
-                    types = parseInt(this.condition.types);
-                }
-
                 //设置参数
                 const params = new URLSearchParams();
-                params.append('types', types);
+                params.append('types', this.condition.types);
                 params.append('content', this.condition.content);
                 params.append('status', this.condition.status);
                 params.append('startDate', startDate);
